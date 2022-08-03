@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:practice_probation_pokemon_app/app_constants.dart';
 
-import 'home.dart';
+import 'feature/home/presentation/home.dart';
 
 void main() {
   runApp(MyApp());

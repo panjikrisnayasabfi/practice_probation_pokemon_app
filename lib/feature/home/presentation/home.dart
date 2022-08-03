@@ -16,13 +16,13 @@ class _HomeState extends State<Home> {
       appBar: AppBar(
         title: Text(widget.appBarTitle),
       ),
-      body: Center(
+      body: Padding(
+        padding: const EdgeInsets.only(top: 32, right: 16, left: 16),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text(
-              'This is home screen',
-            ),
+            Text('Pokemon List'),
+            const SizedBox(height: 8),
+            
           ],
         ),
       ),
