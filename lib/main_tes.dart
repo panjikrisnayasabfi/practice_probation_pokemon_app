@@ -1,21 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:practice_probation_pokemon_app/app_constants.dart';
+import 'app_constants.dart';
+import 'core/flavor_config.dart';
+import 'main.dart';
 
-import 'feature/home/presentation/home.dart';
-
-void main() {
+void main() async {
+  FlavorConfig(appTitle: appTitleTes, appBarColor: Colors.blue, flavor: Flavor.DEV, values: FlavorValues(baseUrl: '', passwordConfig: '', usernameConfig: ''));
   runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: appTitleTes,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: Home(appBarTitle: appTitleTes),
-    );
-  }
 }

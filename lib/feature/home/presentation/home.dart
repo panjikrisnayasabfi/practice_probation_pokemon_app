@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:practice_probation_pokemon_app/core/flavor_config.dart';
 
 class Home extends StatefulWidget {
-  Home({Key key, this.appBarTitle}) : super(key: key);
-
-  final String appBarTitle;
-
   @override
   _HomeState createState() => _HomeState();
 }
@@ -14,7 +11,8 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.appBarTitle),
+        title: Text(FlavorConfig.instance.appTitle),
+        backgroundColor: FlavorConfig.instance.appBarColor,
       ),
       body: Padding(
         padding: const EdgeInsets.only(top: 32, right: 16, left: 16),
@@ -22,7 +20,6 @@ class _HomeState extends State<Home> {
           children: <Widget>[
             Text('Pokemon List'),
             const SizedBox(height: 8),
-            
           ],
         ),
       ),
