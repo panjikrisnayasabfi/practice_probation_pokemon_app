@@ -35,5 +35,24 @@ class GetPokemonListBloc
         yield GetPokemonListError(e.toString());
       }
     }
+    if (event is FilterPokemonList) {
+      yield GetPokemonListLoading();
+      try {
+        pokemonListModel = await getPokemonListRepo.getPokemonList(9999, 0);
+        var tempPokemonList = pokemonListModel.results.where((pokemon) {
+          var pokemonName = pokemon.name.toLowerCase();
+          var inputName = event.pokemonName.toLowerCase();
+          return pokemonName.contains(inputName);
+        }).toList();
+        pokemonListModel.results = tempPokemonList;
+        if (pokemonListModel.results.length != 0) {
+          yield FilterPokemonListLoaded(pokemonListModel: pokemonListModel);
+        } else {
+          yield GetPokemonListError('Pokemon not found');
+        }
+      } catch (e) {
+        yield GetPokemonListError(e.toString());
+      }
+    }
   }
 }

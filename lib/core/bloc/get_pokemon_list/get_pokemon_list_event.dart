@@ -11,3 +11,12 @@ class GetPokemonList extends GetPokemonListEvent {
   @override
   List<Object> get props => [];
 }
+
+class FilterPokemonList extends GetPokemonListEvent {
+  final String pokemonName;
+
+  FilterPokemonList(this.pokemonName);
+
+  @override
+  List<Object> get props => [];
+}

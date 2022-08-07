@@ -20,6 +20,15 @@ class GetPokemonListLoaded extends GetPokemonListState {
   List<Object> get props => [pokemonListModel];
 }
 
+class FilterPokemonListLoaded extends GetPokemonListState {
+  final PokemonListModel pokemonListModel;
+
+  const FilterPokemonListLoaded({this.pokemonListModel});
+
+  @override
+  List<Object> get props => [pokemonListModel];
+}
+
 class GetPokemonListError extends GetPokemonListState {
   final String error;
 
