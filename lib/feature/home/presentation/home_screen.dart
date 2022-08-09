@@ -1,21 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:practice_probation_pokemon_app/app_constants.dart';
 import 'package:practice_probation_pokemon_app/core/bloc/get_pokemon_list/get_pokemon_list_bloc.dart';
 import 'package:practice_probation_pokemon_app/core/config/flavor_config.dart';
 import 'package:practice_probation_pokemon_app/core/domain/repositories/get_pokemon_list_repo.dart';
 import 'package:practice_probation_pokemon_app/core/model/pokemon_list_model.dart';
+import 'package:practice_probation_pokemon_app/core/provider/pokemon_deck_provider.dart';
 import 'package:practice_probation_pokemon_app/core/widget/filter_card.dart';
 import 'package:practice_probation_pokemon_app/core/widget/pokemon_card.dart';
+import 'package:provider/provider.dart';
 
-class Home extends StatefulWidget {
-  const Home({Key key}) : super(key: key);
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({Key key}) : super(key: key);
 
   @override
-  _HomeState createState() => _HomeState();
+  _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeState extends State<Home> {
+class _HomeScreenState extends State<HomeScreen> {
   final _pagingController = PagingController(firstPageKey: 0);
   final _searchController = TextEditingController();
   final List<String> _filterByAlphabet = [
@@ -66,6 +69,15 @@ class _HomeState extends State<Home> {
     }
   }
 
+  void _onAddPokemon(Result pokemon) {
+    Provider.of<PokemonDeckProvider>(context, listen: false)
+        .addPokemon(pokemon);
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text('${pokemon.name.toUpperCase()} added to deck'),
+      duration: Duration(milliseconds: 700),
+    ));
+  }
+
   void _appendList(List<Result> pokemonList) {
     final isLastPage = pokemonList.length < _pageLimit;
     if (isLastPage) {
@@ -110,6 +122,49 @@ class _HomeState extends State<Home> {
       appBar: AppBar(
         title: Text(FlavorConfig.instance.appTitle),
         backgroundColor: FlavorConfig.instance.appBarColor,
+        actions: <Widget>[
+          Padding(
+            padding: EdgeInsets.only(right: 20, top: 15, bottom: 15),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.pushNamed(context, Routes.pokemonDeckScreen);
+              },
+              child: Stack(
+                alignment: Alignment.bottomRight,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(right: 6, bottom: 2),
+                    child: Image.asset('assets/icons/poke_ball.png'),
+                  ),
+                  Align(
+                    alignment: Alignment.bottomRight,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white,
+                      ),
+                      width: 12,
+                      height: 12,
+                      child: Center(
+                        child: Text(
+                          Provider.of<PokemonDeckProvider>(
+                            context,
+                            listen: true,
+                          ).count.toString(),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                            fontSize: 8,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
       body: BlocListener<GetPokemonListBloc, GetPokemonListState>(
         cubit: _getPokemonListBloc,
@@ -171,7 +226,10 @@ class _HomeState extends State<Home> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text('Pokemon List'),
+          Text(
+            'Pokemon List',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 10),
           TextField(
             controller: _searchController,
@@ -199,8 +257,11 @@ class _HomeState extends State<Home> {
                 pagingController: _pagingController,
                 padding: const EdgeInsets.only(bottom: 20),
                 builderDelegate: PagedChildBuilderDelegate(
-                  itemBuilder: (context, pokemon, index) =>
-                      PokemonCard(pokemonName: pokemon.name),
+                  itemBuilder: (context, pokemon, index) => PokemonCard(
+                    pokemonName: pokemon.name,
+                    onTapButton: () => _onAddPokemon(pokemon),
+                    action: PokemonListActions.add,
+                  ),
                 ),
               ),
             ),
