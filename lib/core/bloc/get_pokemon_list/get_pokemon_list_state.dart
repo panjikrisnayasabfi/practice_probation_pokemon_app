@@ -20,10 +20,28 @@ class GetPokemonListLoaded extends GetPokemonListState {
   List<Object> get props => [pokemonListModel];
 }
 
-class FilterPokemonListLoaded extends GetPokemonListState {
+class SearchPokemonLoaded extends GetPokemonListState {
   final PokemonListModel pokemonListModel;
 
-  const FilterPokemonListLoaded({this.pokemonListModel});
+  const SearchPokemonLoaded({this.pokemonListModel});
+
+  @override
+  List<Object> get props => [pokemonListModel];
+}
+
+class FilterPokemonListAddLoaded extends GetPokemonListState {
+  final PokemonListModel pokemonListModel;
+
+  const FilterPokemonListAddLoaded({this.pokemonListModel});
+
+  @override
+  List<Object> get props => [pokemonListModel];
+}
+
+class FilterPokemonListRemoveLoaded extends GetPokemonListState {
+  final PokemonListModel pokemonListModel;
+
+  const FilterPokemonListRemoveLoaded({this.pokemonListModel});
 
   @override
   List<Object> get props => [pokemonListModel];

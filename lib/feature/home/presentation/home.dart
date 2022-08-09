@@ -5,6 +5,7 @@ import 'package:practice_probation_pokemon_app/core/bloc/get_pokemon_list/get_po
 import 'package:practice_probation_pokemon_app/core/config/flavor_config.dart';
 import 'package:practice_probation_pokemon_app/core/domain/repositories/get_pokemon_list_repo.dart';
 import 'package:practice_probation_pokemon_app/core/model/pokemon_list_model.dart';
+import 'package:practice_probation_pokemon_app/core/widget/filter_card.dart';
 import 'package:practice_probation_pokemon_app/core/widget/pokemon_card.dart';
 
 class Home extends StatefulWidget {
@@ -16,29 +17,79 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   final _pagingController = PagingController(firstPageKey: 0);
-  final _filterController = TextEditingController();
+  final _searchController = TextEditingController();
+  final List<String> _filterByAlphabet = [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G",
+    "H",
+    "I",
+    "J",
+    "K",
+    "L",
+    "M",
+    "N",
+    "O",
+    "P",
+    "Q",
+    "R",
+    "S",
+    "T",
+    "U",
+    "V",
+    "W",
+    "X",
+    "Y",
+    "Z"
+  ];
+  final int _pageLimit = 20;
 
   GetPokemonListBloc _getPokemonListBloc =
       GetPokemonListBloc(getPokemonListRepo: GetPokemonListRepo());
   PokemonListModel _pokemonListModel;
-  int _pageLimit = 20;
   int _pageKey = 0;
+  List<String> _selectedFilter = [];
+  List<Result> _filteredPokemonListMaster = [];
+
+  void _onFilterTap(String filterName) {
+    if (_selectedFilter.contains(filterName)) {
+      _selectedFilter.remove(filterName);
+      _getPokemonListBloc
+          .add(FilterPokemonListRemove(filterName, _pokemonListModel));
+    } else {
+      _selectedFilter.add(filterName);
+      _getPokemonListBloc.add(FilterPokemonListAdd(filterName));
+    }
+  }
+
+  void _appendList(List<Result> pokemonList) {
+    final isLastPage = pokemonList.length < _pageLimit;
+    if (isLastPage) {
+      _pagingController.appendLastPage(pokemonList);
+    } else {
+      final nextPageKey = _pageKey + pokemonList.length;
+      _pagingController.appendPage(pokemonList, nextPageKey);
+    }
+  }
 
   @override
   void initState() {
     _getPokemonListBloc.add(GetPokemonList(_pageLimit, _pageKey));
 
-    _filterController.addListener(() {
-      if (_filterController.text.isEmpty) {
-        _pagingController.itemList = null;
-        _getPokemonListBloc.add(GetPokemonList(_pageLimit, _pageKey));
-      } else {
-        _getPokemonListBloc.add(FilterPokemonList(_filterController.text));
+    _searchController.addListener(() {
+      if (_filteredPokemonListMaster.length != 0) {
+        _pokemonListModel.results = _filteredPokemonListMaster;
       }
+      _getPokemonListBloc.add(SearchPokemon(_searchController.text,
+          _selectedFilter.length <= 0 ? null : _pokemonListModel));
     });
 
     _pagingController.addPageRequestListener((pageKey) {
-      if (_filterController.text.isEmpty) {
+      if (_searchController.text.isEmpty && _selectedFilter.length == 0) {
         _pageKey = pageKey;
         _getPokemonListBloc.add(GetPokemonList(_pageLimit, _pageKey));
       }
@@ -63,35 +114,50 @@ class _HomeState extends State<Home> {
       body: BlocListener<GetPokemonListBloc, GetPokemonListState>(
         cubit: _getPokemonListBloc,
         listener: (BuildContext context, GetPokemonListState state) {
-          if (state is GetPokemonListInitial) {}
-          if (state is GetPokemonListLoading) {}
           if (state is GetPokemonListLoaded) {
-            _pokemonListModel = state.pokemonListModel;
-
-            final isLastPage = _pokemonListModel.results.length < _pageLimit;
-            if (isLastPage) {
-              _pagingController.appendLastPage(_pokemonListModel.results);
+            if (_searchController.text.isNotEmpty) {
+              _getPokemonListBloc
+                  .add(SearchPokemon(_searchController.text, null));
             } else {
-              final nextPageKey = _pageKey + _pokemonListModel.results.length;
-              _pagingController.appendPage(
-                  _pokemonListModel.results, nextPageKey);
+              _pokemonListModel = state.pokemonListModel;
+              _appendList(_pokemonListModel.results);
             }
           }
-          if (state is FilterPokemonListLoaded) {
+          if (state is SearchPokemonLoaded) {
             _pokemonListModel = state.pokemonListModel;
             _pagingController.itemList = null;
             _pagingController.appendLastPage(_pokemonListModel.results);
           }
-          if (state is GetPokemonListError) {}
+          if (state is FilterPokemonListAddLoaded) {
+            if (_selectedFilter.length == 1) {
+              _pagingController.itemList = [];
+              _filteredPokemonListMaster = [];
+              _pokemonListModel = state.pokemonListModel;
+              _filteredPokemonListMaster = state.pokemonListModel.results;
+            } else {
+              _pokemonListModel.results += state.pokemonListModel.results;
+              _filteredPokemonListMaster += state.pokemonListModel.results;
+            }
+            if (_searchController.text.isNotEmpty) {
+              _getPokemonListBloc.add(
+                  SearchPokemon(_searchController.text, _pokemonListModel));
+            }
+            _pagingController.appendLastPage(state.pokemonListModel.results);
+          }
+          if (state is FilterPokemonListRemoveLoaded) {
+            _pagingController.itemList = null;
+            _pokemonListModel = state.pokemonListModel;
+            _filteredPokemonListMaster = state.pokemonListModel.results;
+            if (state.pokemonListModel.results.length == 0) {
+              _getPokemonListBloc.add(GetPokemonList(_pageLimit, 0));
+            } else {
+              _pagingController.appendLastPage(_pokemonListModel.results);
+            }
+          }
         },
         child: BlocBuilder<GetPokemonListBloc, GetPokemonListState>(
           cubit: _getPokemonListBloc,
           builder: (context, GetPokemonListState state) {
-            if (state is GetPokemonListInitial) {}
-            if (state is GetPokemonListLoading) {}
-            if (state is GetPokemonListLoaded) {}
-            if (state is FilterPokemonListLoaded) {}
-            if (state is GetPokemonListError) {}
             return mainContent(state);
           },
         ),
@@ -108,22 +174,36 @@ class _HomeState extends State<Home> {
           Text('Pokemon List'),
           const SizedBox(height: 10),
           TextField(
-            controller: _filterController,
+            controller: _searchController,
             decoration: new InputDecoration(hintText: 'Search pokemon'),
           ),
-          const SizedBox(height: 30),
-          (state is GetPokemonListError)
-              ? Text(state.error)
-              : Expanded(
-                  child: PagedListView(
-                    pagingController: _pagingController,
-                    padding: const EdgeInsets.only(bottom: 20),
-                    builderDelegate: PagedChildBuilderDelegate(
-                      itemBuilder: (context, pokemon, index) =>
-                          PokemonCard(pokemonName: pokemon.name),
-                    ),
-                  ),
+          const SizedBox(height: 10),
+          SizedBox(
+            height: 40,
+            child: ListView.builder(
+              itemCount: _filterByAlphabet.length,
+              scrollDirection: Axis.horizontal,
+              itemBuilder: (context, index) => FilterCard(
+                filterName: _filterByAlphabet[index],
+                onTap: () => _onFilterTap(_filterByAlphabet[index]),
+                isSelected: _selectedFilter.contains(_filterByAlphabet[index]),
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
+          if (state is GetPokemonListError)
+            Text(state.error)
+          else
+            Expanded(
+              child: PagedListView(
+                pagingController: _pagingController,
+                padding: const EdgeInsets.only(bottom: 20),
+                builderDelegate: PagedChildBuilderDelegate(
+                  itemBuilder: (context, pokemon, index) =>
+                      PokemonCard(pokemonName: pokemon.name),
                 ),
+              ),
+            ),
         ],
       ),
     );

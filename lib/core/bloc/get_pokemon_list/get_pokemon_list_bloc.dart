@@ -35,10 +35,12 @@ class GetPokemonListBloc
         yield GetPokemonListError(e.toString());
       }
     }
-    if (event is FilterPokemonList) {
+    if (event is SearchPokemon) {
       yield GetPokemonListLoading();
       try {
-        pokemonListModel = await getPokemonListRepo.getPokemonList(9999, 0);
+        pokemonListModel = event.pokemonListModel == null
+            ? await getPokemonListRepo.getPokemonList(9999, 0)
+            : event.pokemonListModel;
         var tempPokemonList = pokemonListModel.results.where((pokemon) {
           var pokemonName = pokemon.name.toLowerCase();
           var inputName = event.pokemonName.toLowerCase();
@@ -46,10 +48,43 @@ class GetPokemonListBloc
         }).toList();
         pokemonListModel.results = tempPokemonList;
         if (pokemonListModel.results.length != 0) {
-          yield FilterPokemonListLoaded(pokemonListModel: pokemonListModel);
+          yield SearchPokemonLoaded(pokemonListModel: pokemonListModel);
         } else {
           yield GetPokemonListError('Pokemon not found');
         }
+      } catch (e) {
+        yield GetPokemonListError(e.toString());
+      }
+    }
+    if (event is FilterPokemonListAdd) {
+      yield GetPokemonListLoading();
+      try {
+        pokemonListModel = await getPokemonListRepo.getPokemonList(9999, 0);
+        var tempPokemonList = pokemonListModel.results.where((pokemon) {
+          var pokemonName = pokemon.name.toLowerCase();
+          var filterName = event.filterName.toLowerCase();
+          return pokemonName.startsWith(filterName);
+        }).toList();
+        pokemonListModel.results = tempPokemonList;
+        if (pokemonListModel.results.length != 0) {
+          yield FilterPokemonListAddLoaded(pokemonListModel: pokemonListModel);
+        } else {
+          yield GetPokemonListError('Pokemon not found');
+        }
+      } catch (e) {
+        yield GetPokemonListError(e.toString());
+      }
+    }
+    if (event is FilterPokemonListRemove) {
+      yield GetPokemonListLoading();
+      try {
+        pokemonListModel = event.pokemonListModel;
+        pokemonListModel.results.removeWhere((pokemon) {
+          var pokemonName = pokemon.name.toLowerCase();
+          var filterName = event.filterName.toLowerCase();
+          return pokemonName.startsWith(filterName);
+        });
+        yield FilterPokemonListRemoveLoaded(pokemonListModel: pokemonListModel);
       } catch (e) {
         yield GetPokemonListError(e.toString());
       }

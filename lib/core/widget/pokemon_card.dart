@@ -9,13 +9,8 @@ class PokemonCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(pokemonName),
-          ],
-        ),
+        padding: const EdgeInsets.all(20),
+        child: Text(pokemonName),
       ),
     );
   }

@@ -12,10 +12,30 @@ class GetPokemonList extends GetPokemonListEvent {
   List<Object> get props => [];
 }
 
-class FilterPokemonList extends GetPokemonListEvent {
+class SearchPokemon extends GetPokemonListEvent {
   final String pokemonName;
+  final PokemonListModel pokemonListModel;
 
-  FilterPokemonList(this.pokemonName);
+  SearchPokemon(this.pokemonName, this.pokemonListModel);
+
+  @override
+  List<Object> get props => [];
+}
+
+class FilterPokemonListAdd extends GetPokemonListEvent {
+  final String filterName;
+
+  FilterPokemonListAdd(this.filterName);
+
+  @override
+  List<Object> get props => [];
+}
+
+class FilterPokemonListRemove extends GetPokemonListEvent {
+  final String filterName;
+  final PokemonListModel pokemonListModel;
+
+  FilterPokemonListRemove(this.filterName, this.pokemonListModel);
 
   @override
   List<Object> get props => [];
