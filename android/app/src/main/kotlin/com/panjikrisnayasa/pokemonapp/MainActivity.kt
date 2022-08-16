@@ -1,4 +1,4 @@
-package com.example.practice_probation_pokemon_app
+package com.panjikrisnayasa.pokemonapp
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -1,0 +1,82 @@
+{
+  "project_info": {
+    "project_number": "218928583184",
+    "project_id": "practice-probation-pokemon-app",
+    "storage_bucket": "practice-probation-pokemon-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:218928583184:android:756a8488abd7309a80b095",
+        "android_client_info": {
+          "package_name": "com.panjikrisnayasa.pokemonapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "218928583184-dborpb8h2ibq6itvidop8ucdj4nsdqbd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDU3hby5LBGZxzktRaeLoPiwLlFOh60k8I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "218928583184-dborpb8h2ibq6itvidop8ucdj4nsdqbd.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "218928583184-bjjjsctmr4cb86q3t35vnord10hs7mt2.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.practiceProbationPokemonApp"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:218928583184:android:0f6f5d24a5b3d59a80b095",
+        "android_client_info": {
+          "package_name": "com.panjikrisnayasa.pokemonapp.dev"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "218928583184-dborpb8h2ibq6itvidop8ucdj4nsdqbd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDU3hby5LBGZxzktRaeLoPiwLlFOh60k8I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "218928583184-dborpb8h2ibq6itvidop8ucdj4nsdqbd.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "218928583184-bjjjsctmr4cb86q3t35vnord10hs7mt2.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.practiceProbationPokemonApp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
