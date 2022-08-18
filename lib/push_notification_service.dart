@@ -19,6 +19,7 @@ class PushNotificationService {
       playSound: true,
       enableVibration: true,
       enableLights: true,
+      criticalAlerts: false,
     );
 
     AwesomeNotifications().setChannel(highImportanceChannel);
@@ -66,9 +67,12 @@ class PushNotificationService {
         // If `onMessage` is triggered with a notification, construct our own
         // local notification to show to users using the created channel.
         if (notification != null) {
-          print('Message also contained a notification: $notification');
-
-          _createNotification(notification);
+          if (message.data['type'] == 'call') {
+            _createCallNotification(notification);
+          }
+          if (message.data['type'] == 'notification') {
+            _createNotification(notification);
+          }
         }
       });
     } else {
@@ -80,12 +84,17 @@ class PushNotificationService {
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   print("Handling a background message: ${message.messageId}");
 
-  _createNotification(message.notification);
+  if (message.data['type'] == 'call') {
+    _createCallNotification(message.notification);
+  }
+  if (message.data['type'] == 'notification') {
+    _createNotification(message.notification);
+  }
 }
 
-void _createNotification(RemoteNotification notification) {
+void _createCallNotification(RemoteNotification notification) async {
   // TODO: notification sound is not repeating when app in the background or terminated
-  AwesomeNotifications().createNotification(
+  await AwesomeNotifications().createNotification(
     content: NotificationContent(
       id: 0,
       channelKey: 'high_importance_channel',
@@ -98,22 +107,40 @@ void _createNotification(RemoteNotification notification) {
       displayOnForeground: true,
       displayOnBackground: true,
       fullScreenIntent: true, // lock the notification
+      notificationLayout: NotificationLayout.Default,
     ),
     actionButtons: [
       NotificationActionButton(
         key: 'reject',
         label: 'Reject',
         color: ColorName.red,
-        icon:
-            'resource://drawable/res_reject.png', // TODO: unable to show the icon
+        icon: 'resource://drawable/res_reject', // TODO: unable to show the icon
       ),
       NotificationActionButton(
         key: 'pickup',
         label: 'Pickup',
         color: ColorName.green,
-        icon:
-            'resource://drawable/res_pickup.png', // TODO: unable to show the icon
+        icon: 'resource://drawable/res_pickup', // TODO: unable to show the icon
       ),
     ],
+  );
+}
+
+void _createNotification(RemoteNotification notification) async {
+  await AwesomeNotifications().createNotification(
+    content: NotificationContent(
+      id: 0,
+      channelKey: 'high_importance_channel',
+      title: notification.title,
+      body: notification.body,
+      wakeUpScreen: true,
+      locked: false,
+      autoDismissible: true,
+      category: NotificationCategory.Reminder,
+      displayOnForeground: true,
+      displayOnBackground: true,
+      fullScreenIntent: false, // lock the notification
+      notificationLayout: NotificationLayout.Default,
+    ),
   );
 }

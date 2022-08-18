@@ -1,3 +1,4 @@
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
@@ -90,6 +91,39 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
+    // dummy code to show notification instantly
+    // AwesomeNotifications().createNotification(
+    //   content: NotificationContent(
+    //     id: 0,
+    //     channelKey: 'high_importance_channel',
+    //     title: 'Incoming Call',
+    //     body: 'Call from Panji',
+    //     wakeUpScreen: true,
+    //     locked: true,
+    //     autoDismissible: false,
+    //     category: NotificationCategory.Call,
+    //     displayOnForeground: true,
+    //     displayOnBackground: true,
+    //     fullScreenIntent: true, // lock the notification
+    //   ),
+    //   actionButtons: [
+    //     NotificationActionButton(
+    //       key: 'reject',
+    //       label: 'Reject',
+    //       color: ColorName.red,
+    //       icon:
+    //           'resource://drawable/res_reject', // TODO: unable to show the icon
+    //     ),
+    //     NotificationActionButton(
+    //       key: 'pickup',
+    //       label: 'Pickup',
+    //       color: ColorName.green,
+    //       icon:
+    //           'resource://drawable/res_pickup', // TODO: unable to show the icon
+    //     ),
+    //   ],
+    // );
+
     _getPokemonListBloc.add(GetPokemonList(_pageLimit, _pageKey));
 
     _searchController.addListener(() {
@@ -106,6 +140,7 @@ class _HomeScreenState extends State<HomeScreen> {
         _getPokemonListBloc.add(GetPokemonList(_pageLimit, _pageKey));
       }
     });
+
     super.initState();
   }
 
@@ -113,11 +148,23 @@ class _HomeScreenState extends State<HomeScreen> {
   void dispose() {
     _pagingController.dispose();
     _getPokemonListBloc.close();
+    AwesomeNotifications().actionSink.close();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    AwesomeNotifications().actionStream.listen((receivedNotification) {
+      print('Action stream $receivedNotification');
+      if (receivedNotification.buttonKeyPressed == 'pickup') {
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          Routes.pokemonDeckScreen,
+          (route) => route.isFirst,
+        );
+      }
+    });
+
     return Scaffold(
       appBar: AppBar(
         title: Text(FlavorConfig.instance.appTitle),
