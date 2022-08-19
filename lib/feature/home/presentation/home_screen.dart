@@ -163,6 +163,7 @@ class _HomeScreenState extends State<HomeScreen> {
           (route) => route.isFirst,
         );
       }
+      if (receivedNotification.buttonKeyPressed == 'reject') {}
     });
 
     return Scaffold(

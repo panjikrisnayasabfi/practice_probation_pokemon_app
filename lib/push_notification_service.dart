@@ -10,24 +10,42 @@ class PushNotificationService {
   ) : _firebaseMessaging = firebaseMessaging;
 
   Future initialize() async {
-    final highImportanceChannel = NotificationChannel(
-      channelKey: 'high_importance_channel',
-      channelName: 'High Importance Channel',
-      channelDescription: 'Notification channel for high importance messages',
+    final callChannel = NotificationChannel(
+      channelKey: 'call_channel',
+      channelName: 'Call Channel',
+      channelDescription: 'Notification channel to receive a call',
+      channelShowBadge: true,
+      importance: NotificationImportance.Max,
+      playSound: true,
+      defaultRingtoneType: DefaultRingtoneType.Ringtone,
+      enableVibration: true,
+      enableLights: false,
+      criticalAlerts: true,
+      locked: true,
+      onlyAlertOnce: false,
+      defaultPrivacy: NotificationPrivacy.Public,
+    );
+
+    final notificationChannel = NotificationChannel(
+      channelKey: 'notification_channel',
+      channelName: 'Notification Channel',
+      channelDescription: 'Notification channel',
       channelShowBadge: true,
       importance: NotificationImportance.High,
       playSound: true,
+      defaultRingtoneType: DefaultRingtoneType.Notification,
       enableVibration: true,
       enableLights: true,
       criticalAlerts: false,
+      locked: false,
+      onlyAlertOnce: true,
     );
-
-    AwesomeNotifications().setChannel(highImportanceChannel);
 
     AwesomeNotifications().initialize(
       null,
       [
-        highImportanceChannel,
+        callChannel,
+        notificationChannel,
       ],
       debug: true,
     );
@@ -97,17 +115,19 @@ void _createCallNotification(RemoteNotification notification) async {
   await AwesomeNotifications().createNotification(
     content: NotificationContent(
       id: 0,
-      channelKey: 'high_importance_channel',
+      channelKey: 'call_channel',
       title: notification.title,
       body: notification.body,
+      summary: 'Call Notification',
       wakeUpScreen: true,
       locked: true,
       autoDismissible: false,
       category: NotificationCategory.Call,
-      displayOnForeground: true,
-      displayOnBackground: true,
       fullScreenIntent: true, // lock the notification
-      notificationLayout: NotificationLayout.Default,
+      notificationLayout: NotificationLayout.Messaging,
+      displayOnBackground: true,
+      displayOnForeground: true,
+      criticalAlert: true,
     ),
     actionButtons: [
       NotificationActionButton(
@@ -129,18 +149,19 @@ void _createCallNotification(RemoteNotification notification) async {
 void _createNotification(RemoteNotification notification) async {
   await AwesomeNotifications().createNotification(
     content: NotificationContent(
-      id: 0,
-      channelKey: 'high_importance_channel',
+      id: 1,
+      channelKey: 'notification_channel',
       title: notification.title,
       body: notification.body,
+      summary: 'Notification',
       wakeUpScreen: true,
       locked: false,
       autoDismissible: true,
       category: NotificationCategory.Reminder,
-      displayOnForeground: true,
-      displayOnBackground: true,
       fullScreenIntent: false, // lock the notification
       notificationLayout: NotificationLayout.Default,
+      displayOnBackground: true,
+      displayOnForeground: true,
     ),
   );
 }

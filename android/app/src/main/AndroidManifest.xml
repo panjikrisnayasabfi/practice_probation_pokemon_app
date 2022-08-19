@@ -11,6 +11,12 @@
         android:label="@string/app_name"
         android:icon="@mipmap/ic_launcher">
 
+        <receiver android:name="androidx.media.session.MediaButtonReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+            </intent-filter>
+        </receiver>
+
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
@@ -39,6 +45,10 @@
               android:name="io.flutter.embedding.android.SplashScreenDrawable"
               android:resource="@drawable/launch_background"
               />
+
+            <meta-data
+                android:name="com.google.firebase.messaging.default_notification_channel_id"
+                android:value="@string/default_notification_channel_id" />
               
             <intent-filter>
                 <action android:name="FLUTTER_NOTIFICATION_CLICK" />
