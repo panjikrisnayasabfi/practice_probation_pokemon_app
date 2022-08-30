@@ -141,6 +141,18 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     });
 
+    AwesomeNotifications().actionStream.listen((receivedNotification) {
+      print('Action stream $receivedNotification');
+      if (receivedNotification.buttonKeyPressed == 'pickup') {
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          Routes.pokemonDeckScreen,
+          (route) => route.isFirst,
+        );
+      }
+      if (receivedNotification.buttonKeyPressed == 'reject') {}
+    });
+
     super.initState();
   }
 
@@ -154,18 +166,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    AwesomeNotifications().actionStream.listen((receivedNotification) {
-      print('Action stream $receivedNotification');
-      if (receivedNotification.buttonKeyPressed == 'pickup') {
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          Routes.pokemonDeckScreen,
-          (route) => route.isFirst,
-        );
-      }
-      if (receivedNotification.buttonKeyPressed == 'reject') {}
-    });
-
     return Scaffold(
       appBar: AppBar(
         title: Text(FlavorConfig.instance.appTitle),
