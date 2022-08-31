@@ -1,13 +1,13 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:practice_probation_pokemon_app/core/model/pokemon_list_model.dart';
 
 class PokemonDeckProvider with ChangeNotifier {
   List<Result> _pokemonDeck = [];
   String _deckName = 'Untitled Deck';
-  XFile _deckImage;
+  CroppedFile _deckImage;
   File _attachedFile;
 
   List<Result> get pokemonDeck => _pokemonDeck;
@@ -32,7 +32,7 @@ class PokemonDeckProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void setDeckImage(XFile deckImage) {
+  void setDeckImage(CroppedFile deckImage) {
     _deckImage = deckImage;
     notifyListeners();
   }

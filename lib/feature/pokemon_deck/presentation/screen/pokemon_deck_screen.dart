@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:practice_probation_pokemon_app/app_constants.dart';
 import 'package:practice_probation_pokemon_app/core/provider/pokemon_deck_provider.dart';
@@ -20,6 +21,29 @@ class _PokemonDeckScreenState extends State<PokemonDeckScreen> {
   final ImagePicker _imagePicker = ImagePicker();
 
   bool _isEditDeckName = false;
+
+  void _pickImage(ImageSource pickSource, PokemonDeckProvider provider) async {
+    Navigator.pop(context);
+    var pickedImage = await _imagePicker.pickImage(source: pickSource);
+
+    var croppedFile = await ImageCropper().cropImage(
+      sourcePath: pickedImage.path,
+      cropStyle: CropStyle.circle,
+      compressFormat: ImageCompressFormat.jpg,
+      aspectRatio: CropAspectRatio(ratioX: 1, ratioY: 1),
+      uiSettings: [
+        AndroidUiSettings(
+          toolbarTitle: 'Crop Deck Image',
+          toolbarColor: Colors.redAccent,
+          toolbarWidgetColor: Colors.white,
+          initAspectRatio: CropAspectRatioPreset.original,
+          lockAspectRatio: false,
+        ),
+      ],
+    );
+
+    provider.setDeckImage(croppedFile);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -105,11 +129,8 @@ class _PokemonDeckScreenState extends State<PokemonDeckScreen> {
                 ),
                 const SizedBox(height: 16),
                 InkWell(
-                  onTap: () async {
-                    Navigator.pop(context);
-                    var pickedImage = await _imagePicker.pickImage(
-                        source: ImageSource.camera);
-                    provider.setDeckImage(pickedImage);
+                  onTap: () {
+                    _pickImage(ImageSource.camera, provider);
                   },
                   child: Container(
                     color: Colors.grey[200],
@@ -126,10 +147,7 @@ class _PokemonDeckScreenState extends State<PokemonDeckScreen> {
                 const SizedBox(height: 8),
                 InkWell(
                   onTap: () async {
-                    Navigator.pop(context);
-                    var pickedImage = await _imagePicker.pickImage(
-                        source: ImageSource.gallery);
-                    provider.setDeckImage(pickedImage);
+                    _pickImage(ImageSource.gallery, provider);
                   },
                   child: Container(
                     color: Colors.grey[200],
