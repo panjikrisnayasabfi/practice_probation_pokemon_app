@@ -59,12 +59,7 @@ class _PokemonDeckScreenState extends State<PokemonDeckScreen> {
               child: Column(
                 children: [
                   Padding(
-                    padding: EdgeInsets.only(
-                      top: 20,
-                      left: 20,
-                      right: 20,
-                      bottom: 32,
-                    ),
+                    padding: EdgeInsets.all(16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -74,7 +69,7 @@ class _PokemonDeckScreenState extends State<PokemonDeckScreen> {
                           _deckTitleWidget(provider),
                         if (_isEditDeckName == true)
                           _editDeckTitleWidget(provider),
-                        const SizedBox(height: 32),
+                        const SizedBox(height: 24),
                         _deckAttachmentWidget(provider),
                       ],
                     ),
@@ -103,7 +98,7 @@ class _PokemonDeckScreenState extends State<PokemonDeckScreen> {
         );
       },
       child: CircleAvatar(
-        radius: 64,
+        radius: 56,
         backgroundColor: Colors.grey,
         backgroundImage: provider.deckImagePath == null
             ? AssetImage('assets/icons/poke_ball.png')
@@ -247,32 +242,83 @@ class _PokemonDeckScreenState extends State<PokemonDeckScreen> {
         const SizedBox(height: 8),
         Row(
           children: [
-            Flexible(
-              child: Text(
-                provider.attachedFilePath != null
-                    ? provider.attachedFilePath
-                    : 'No attachment',
+            if (provider.attachedFilePath == null)
+              Flexible(
+                child: Text('No attachment'),
               ),
-            ),
-            const SizedBox(width: 8),
+            if (provider.attachedFilePath != null)
+              Flexible(
+                  child: Container(
+                padding: EdgeInsets.all(8),
+                color: Colors.grey[350],
+                child: Column(
+                  children: [
+                    if (provider.attachedFileExtension == 'jpg' ||
+                        provider.attachedFileExtension == 'jpeg' ||
+                        provider.attachedFileExtension == 'png')
+                      Icon(Icons.image),
+                    if (provider.attachedFileExtension == 'mp4')
+                      Icon(Icons.video_file),
+                    if (provider.attachedFileExtension == 'm4a' ||
+                        provider.attachedFileExtension == 'mp3')
+                      Icon(Icons.audio_file),
+                    if (provider.attachedFileExtension == 'pdf' ||
+                        provider.attachedFileExtension == 'doc' ||
+                        provider.attachedFileExtension == 'docx' ||
+                        provider.attachedFileExtension == 'ppt' ||
+                        provider.attachedFileExtension == 'pptx' ||
+                        provider.attachedFileExtension == 'xls' ||
+                        provider.attachedFileExtension == 'xlsx')
+                      Icon(Icons.insert_drive_file),
+                    const SizedBox(height: 8),
+                    Text(provider.attachedFileName),
+                  ],
+                ),
+              )),
+            const SizedBox(width: 16),
             InkWell(
                 onTap: () async {
-                  var pickedFile = await FilePicker.platform.pickFiles();
+                  var pickedFile =
+                      await FilePicker.platform.pickFiles(allowedExtensions: [
+                    'jpg',
+                    'jpeg',
+                    'png',
+                    'mp4',
+                    'm4a',
+                    'mp3',
+                    'pdf',
+                    'doc',
+                    'docx',
+                    'ppt',
+                    'pptx',
+                    'xls',
+                    'xlsx',
+                  ], type: FileType.custom);
                   print('picked file: $pickedFile');
 
-                  if (pickedFile != null) {
-                    if (pickedFile.files.single.path != null) {
-                      provider.setAttachedFile(
-                          File(pickedFile.files.single.path ?? ''));
-                    }
+                  if (pickedFile == null) {
+                    return;
+                  }
+
+                  // if file size is more than 5 MB, then show 'unable to upload file'
+                  if (pickedFile.files.single.size > 5000000) {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text("Unable to upload file more than 5 MB"),
+                      backgroundColor: Colors.red,
+                    ));
+                    return;
+                  }
+
+                  if (pickedFile.files.single.path != null) {
+                    provider.setAttachedFile(pickedFile);
                   }
                 },
                 child: Icon(
                   Icons.edit,
-                  size: 14,
+                  size: 16,
                   color: Colors.grey,
                 )),
-            const SizedBox(width: 8),
+            const SizedBox(width: 16),
             if (provider.attachedFilePath != null)
               InkWell(
                   onTap: () {
@@ -280,7 +326,7 @@ class _PokemonDeckScreenState extends State<PokemonDeckScreen> {
                   },
                   child: Icon(
                     Icons.delete,
-                    size: 14,
+                    size: 16,
                     color: Colors.grey,
                   )),
           ],
